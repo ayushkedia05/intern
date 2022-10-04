@@ -63,7 +63,7 @@ exports.login = catchAsync(async (req, res, next) => {
      {
       user.time.push(date);
       console.log(user.time);
-      const getuser= await User.updateOne({"time":user.time});
+      const getuser= await User.updateOne({"email":email},{$set:{"time":user.time}});
      }
 
     console.log('sffs');
