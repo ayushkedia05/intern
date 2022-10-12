@@ -16,8 +16,9 @@ const registeruser=async(Event)=>{
   Event.preventDefault();
     viewdata.name= Event.target[0].value;
     viewdata.email= Event.target[1].value;
-    viewdata.password= Event.target[2].value;
-    viewdata.passwordconfirm= Event.target[3].value;
+    viewdata.phonenumber=Event.target[2].value;
+    viewdata.password= Event.target[3].value;
+    viewdata.passwordconfirm= Event.target[4].value;
 
 
      console.log(viewdata);
@@ -42,6 +43,10 @@ const registeruser=async(Event)=>{
 
     <label htmlFor="email"><b>Email</b></label>
     <input type="text" placeholder="Enter Email" name="email" id="email" required/>
+
+    
+    <label htmlFor="Phonenumber"><b>phonenumber</b></label>
+    <input type="number" placeholder="Enter phonenumber" name="phonenumber" id="phonenumber" required/>
 
     <label htmlFor="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="psw" id="psw" required/>

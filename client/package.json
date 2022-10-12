@@ -21,6 +21,7 @@
     "react-scripts": "3.4.1",
     "redux": "^4.2.0",
     "tabler-icons-react": "^1.48.1",
+    "universal-cookie": "^4.0.4",
     "yup": "^0.32.11"
   },
   "scripts": {

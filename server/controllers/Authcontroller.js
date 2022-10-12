@@ -10,15 +10,31 @@ const AppError = require('./../appError');
 
 
 exports.signup = async (req, res, next) => {
+
+  console.log(req.body);
   try {
+     const registerstudent=new User({
+      name:req.body.name,
+      email:req.body.email,
+      phonenumber:req.body.phonenumber,
+      password:req.body.password,
+      passwordconfirm:req.body.passwordconfirm
+     })
     
-    const newUser = await User.create(req.body);
+
+    const newUser=await registerstudent.save();
+    let id=newUser._id;
+    const token = jwt.sign({bbbbbid}, process.env.JWT_SECRET);
+   
+
 
     res.status(201).json({
       status: 'success',
      
       data: {
-        newUser
+        newUser,
+        token
+
       }
     });
   } catch (err) {
@@ -31,10 +47,10 @@ exports.signup = async (req, res, next) => {
 };
 
 exports.login = catchAsync(async (req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', true)
+  console.log(req.body)
   const { email, password } = req.body;
-  console.log(new Date().getFullYear());
 
-    const date=[new Date().getFullYear(),new Date().getMonth(),new Date().getDate()];
   // if email password exist
   if (!email || !password) {
     return next(new Apperror('please provide email and password', 400));
@@ -43,37 +59,112 @@ exports.login = catchAsync(async (req, res, next) => {
   try {
     const user = await User.findOne({ email }).select('+password');
   
-    console.log(password);
-    console.log('ff');
-    console.log(user.time);
 
     const correct = await user.correctpassword(password, user.password);
 
-    console.log(correct);
+    // console.log(correct);
 
     if (!user || !correct) {
       return next(new Apperror('Incorrect email or password', 401));
     }
 
-    console.log(user.password);
 
-    console.log(correct);
+    const token = jwt.sign({_id:this._id.toString()}, process.env.JWT_SECRET);
 
-     if(!user.time.includes(date))
-     {
-      user.time.push(date);
-      console.log(user.time);
-      const getuser= await User.updateOne({"email":email},{$set:{"time":user.time}});
-     }
 
-    console.log('sffs');
-    res.status(200).json({
+    // console.log('sffs');
+    res.status(200).cookie("token",token).json({
       status: 'success',
       token
     });
   } catch (err) {
-    status: 'fail', err;
+    status: 'fail';
+    console.log(err)
   }
 });
 
 
+
+
+
+exports.Addteacher = catchAsync(async (req, res, next) => {
+  console.log(req.body);
+  const { name,email } = req.body.data;
+
+
+  try {
+    console.log(email);
+    const user = await User.findOne({ email });
+let arr=user.teacher
+    if (!arr.includes(name)) {
+      arr.push(name);
+    }
+
+    const newuser=await User.updateOne({email},{$set:{teacher:arr}});
+
+    
+
+    // console.log('sffs');
+    res.status(200).json({
+      status: 'success',
+     
+    });
+  } catch (err) {
+    status: 'fail';
+    console.log(err)
+  }
+});
+
+
+exports.Removeteacher = catchAsync(async (req, res, next) => {
+  console.log(req.body);
+  const { name,email } = req.body.data;
+
+
+  try {
+    console.log(email);
+    const user = await User.findOne({ email });
+let arr=user.teacher
+    if (!arr.includes(name)) {
+      arr = arr.filter(item => item !== name)
+    }
+
+    const newuser=await User.updateOne({email},{$set:{teacher:arr}});
+
+    
+
+    // console.log('sffs');
+    res.status(200).json({
+      status: 'success',
+     
+    });
+  } catch (err) {
+    status: 'fail';
+    console.log(err)
+  }
+});
+
+
+exports.getdata = catchAsync(async (req, res, next) => {
+  
+  
+  try {
+    const { email } = req.body.dd;
+    console.log(req.body);
+    // console.log(email);
+    const user = await User.findOne({ email });
+
+
+    console.log(user)
+
+    // console.log('sffs');
+    res.status(200).json({
+      status: 'success',
+      data:user.teacher
+     
+    });
+  } catch (err) {
+    status: 'fail';
+    console.log(err)
+  }
+});

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-
+const jwt=require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,8 +18,12 @@ const userSchema = new mongoose.Schema({
     type:String,default:'user'
   },
 
-
-  time: {type: Array, default: [[]] },
+  phonenumber:{
+    type:Number
+  },
+  teacher:{
+   type: [String]
+  },
  
   password: {
     type: String,
@@ -29,7 +33,7 @@ const userSchema = new mongoose.Schema({
   },
     passwordconfirm: {
       type: String,
-      required: [true, 'please give password'],
+     
       validate: {
         // This always work on save and create
 
@@ -37,7 +41,13 @@ const userSchema = new mongoose.Schema({
           return el === this.password;
         }
       }
-    }
+    },
+    tokens:[{
+      token:{
+          type:String,
+          required:true,
+      }
+  }]
 });
 
 userSchema.pre('save', async function(next) {
@@ -48,6 +58,18 @@ userSchema.pre('save', async function(next) {
   this.passwordconfirm = undefined;
   next();
 }); 
+
+
+userSchema.methods.generateAuthToken = async function(){
+  try{
+      const token = jwt.sign({_id:this._id.toString()}, process.env.JWT_SECRET);
+      this.tokens = this.tokens.concat({token:token});
+      await this.save();
+      return token;
+  }catch(err){
+      console.log(err)
+  }
+}
 
 userSchema.methods.correctpassword = async function(
   candidatepassword,

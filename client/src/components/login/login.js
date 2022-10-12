@@ -21,6 +21,9 @@ import {
   Text,
   Anchor,
 } from '@mantine/core';
+import Cookies from 'universal-cookie';
+ 
+ 
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -64,6 +67,7 @@ export function AuthenticationImage() {
     const [password,setpassword]=useState('');
 
 
+const cookies = new Cookies();
   
 
     let viewdata={
@@ -82,12 +86,32 @@ export function AuthenticationImage() {
   
       const getback=axios.post('http://localhost:3000/api/v1/users/login',viewdata);  
         getback.then(value=>  {
+          cookies.set("email",viewdata.email);
           console.log(value.data);
                        
                           
-            })
-                        
+            },
+            {withCredentials:"include"})
           }
+
+          //   fetch(
+          //     "http://localhost:3000/api/v1/users/login",
+          //     {
+          //       method: "POST",
+          //       body: JSON.stringify({ viewdata }),
+          //       headers: { "Content-Type": "application/json" },
+          //       withCredentials: true
+          //     }
+          //   )
+          //     .then((response) => {
+          //       return response.json();
+          //     })
+          //     .then((responseData) => {
+          //      console.log(responseData);
+          //     });
+          // };
+                        
+          
 
   const { classes } = useStyles();
 
